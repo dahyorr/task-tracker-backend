@@ -1,8 +1,8 @@
 package middlewares
 
 import (
-	"dayo.dev/task-tracker/models"
-	"dayo.dev/task-tracker/utils"
+	"github.com/dahyorr/task-tracker-backend/models"
+	"github.com/dahyorr/task-tracker-backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -14,5 +14,6 @@ func AuthMiddleware(ctx *fiber.Ctx) error {
 		return fiber.ErrUnauthorized
 	}
 	ctx.Locals("session", session)
+	ctx.Locals("user_Id", session.UserId)
 	return ctx.Next()
 }

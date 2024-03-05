@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 
-	"dayo.dev/task-tracker/database"
-	"dayo.dev/task-tracker/shared"
-	"dayo.dev/task-tracker/utils"
+	"github.com/dahyorr/task-tracker-backend/database"
+	"github.com/dahyorr/task-tracker-backend/shared"
+	"github.com/dahyorr/task-tracker-backend/utils"
 )
 
 type User struct {
@@ -44,6 +44,21 @@ func (u *UserFormData) CreateUser() (*User, error) {
 	if err != nil {
 		return nil, err
 	}
+	workspace := Workspace{
+		Name:    fmt.Sprintf("%s's workspace", user.FirstName),
+		OwnerId: user.Id,
+	}
+	err = workspace.Create()
+	if err != nil {
+		user.Delete()
+		return nil, err
+	}
+	err = workspace.AddUser(user.Id)
+	if err != nil {
+		workspace.Delete()
+		user.Delete()
+		return nil, err
+	}
 	return &user, nil
 }
 
@@ -73,6 +88,15 @@ func (u *User) UpdatePassword(password string) error {
 		return err
 	}
 	return u.Update()
+}
+
+func (u *User) Delete() error {
+	stmt := "DELETE FROM users WHERE id=$1;"
+	_, err := database.DB.Exec(stmt, u.Id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func GetUserByEmail(email string) (*User, error) {

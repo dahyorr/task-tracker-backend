@@ -1,7 +1,7 @@
 package database
 
 import (
-	"dayo.dev/task-tracker/utils"
+	"github.com/dahyorr/task-tracker-backend/utils"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )

@@ -1,4 +1,4 @@
-module dayo.dev/task-tracker
+module github.com/dahyorr/task-tracker-backend
 
 go 1.22.0
 

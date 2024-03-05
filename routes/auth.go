@@ -1,8 +1,9 @@
 package routes
 
 import (
-	"dayo.dev/task-tracker/models"
-	"dayo.dev/task-tracker/shared"
+	"github.com/dahyorr/task-tracker-backend/models"
+	"github.com/dahyorr/task-tracker-backend/shared"
+	"github.com/dahyorr/task-tracker-backend/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
 )
@@ -62,4 +63,27 @@ func getUser(c *fiber.Ctx) error {
 		return shared.ErrSomethingWentWrong
 	}
 	return c.JSON(user)
+}
+
+func refreshSession(c *fiber.Ctx) error {
+	session := c.Locals("session").(*models.Session)
+	err := session.Refresh()
+	if err != nil {
+		log.Error(err)
+		return shared.ErrSomethingWentWrong
+	}
+	cookie := session.ToCookie()
+	c.Cookie(cookie)
+	return c.JSON(session)
+}
+
+func logout(c *fiber.Ctx) error {
+	session := c.Locals("session").(*models.Session)
+	err := session.Delete()
+	if err != nil {
+		log.Error(err)
+		return shared.ErrSomethingWentWrong
+	}
+	c.ClearCookie(utils.Config.SessionCookieName)
+	return c.SendStatus(fiber.StatusNoContent)
 }

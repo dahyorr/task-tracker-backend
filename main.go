@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 
-	"dayo.dev/task-tracker/database"
-	"dayo.dev/task-tracker/routes"
-	"dayo.dev/task-tracker/utils"
+	"github.com/dahyorr/task-tracker-backend/database"
+	"github.com/dahyorr/task-tracker-backend/routes"
+	"github.com/dahyorr/task-tracker-backend/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/encryptcookie"
 	"github.com/gofiber/fiber/v2/middleware/logger"

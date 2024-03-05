@@ -3,8 +3,8 @@ package models
 import (
 	"time"
 
-	"dayo.dev/task-tracker/database"
-	"dayo.dev/task-tracker/utils"
+	"github.com/dahyorr/task-tracker-backend/database"
+	"github.com/dahyorr/task-tracker-backend/utils"
 	"github.com/gofiber/fiber/v2"
 	gonanoid "github.com/matoous/go-nanoid/v2"
 )
@@ -61,6 +61,7 @@ func GetSessionByToken(token string) (*Session, error) {
 func (s *Session) Delete() error {
 	stmt := "DELETE FROM sessions WHERE id=$1"
 	_, err := database.DB.Exec(stmt, s.Id)
+	s.Token = ""
 	if err != nil {
 		return err
 	}
@@ -68,9 +69,15 @@ func (s *Session) Delete() error {
 }
 
 func (s *Session) Refresh() error {
+	newToken, err := gonanoid.New(20)
+	if err != nil {
+		return err
+	}
 	s.ExpiresAt = time.Now().Add(utils.Config.SessionDuration)
-	stmt := "UPDATE sessions SET expires_at=? WHERE id=$1"
-	_, err := database.DB.Exec(stmt, s.ExpiresAt, s.Id)
+	s.Token = newToken
+	s.CreatedAt = time.Now()
+	stmt := "UPDATE sessions SET expires_at=:expires_at, token=:token WHERE id=:id"
+	_, err = database.DB.NamedExec(stmt, s)
 	if err != nil {
 		return err
 	}
